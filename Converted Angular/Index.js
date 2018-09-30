@@ -6,9 +6,21 @@
 demoP = document.getElementById("videoStream");
 var numbers = [4, 9, 16, 25];
 var videoFileNames = new Array;
+
+var url = new URL(document.URL);
+var token = url.searchParams.get("auth");
+
+document.getElementById('dashboard').href = "/dashboard.html?auth="+token;
+document.getElementById('videoControl').href = "/index.html?auth="+token;
+document.getElementById('videoUpload').href = "/videoUpload.html?auth="+token;
+document.getElementById('register').href = "/registerAdmin.html?auth="+token;
+
 $.ajax({
         url: "http://localhost:5000/anyurl",
         type: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader ("Authorization", "Bearer " + token);
+        },
         dataType: 'json', // added data type
         success: function(res) {
             console.log(res);
@@ -17,10 +29,15 @@ $.ajax({
         }
     });
 
+
+
 function reloadRequest(){
     $.ajax({
         url: "http://localhost:5000/anyurl",
         type: 'GET',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader ("Authorization", "Bearer " + token);
+        },
         dataType: 'json', // added data type
         success: function(res) {
             console.log(res);
@@ -63,10 +80,27 @@ function changeVideo(){
 function sentPath(){
     var videoPath = event.target.id ;
     console.log(videoPath);
-    $.post("http://localhost:5000/videoPath",{video: videoPath}, function(data){
+    console.log(token);
+    // $.post("http://localhost:5000/videoPath",{video: videoPath}, function(data){
+    //         if(data==='done')
+    //           {
+    //             alert("Video Succesfully Played");
+    //           }
+    //       });
+
+    $.ajax({
+        url: "http://localhost:5000/videoPath",
+        method: "POST",
+        data: { video: videoPath },
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader ("Authorization", "Bearer " + token);
+        },
+        success: function(data)
+        {
             if(data==='done')
-              {
+            {
                 alert("Video Succesfully Played");
-              }
-          });
+            }
+        }
+    });
 }
